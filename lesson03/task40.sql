@@ -19,7 +19,7 @@ SELECT
 FROM products p
 JOIN categories c ON p.category_id = c.category_id
 JOIN suppliers s ON p.supplier_id = s.supplier_id
-WHERE p.discontinued = 1
+WHERE p.discontinued = 0
   AND (c.category_name = 'Beverages' OR c.category_name = 'Seafood')
   AND p.units_in_stock < 20;
 

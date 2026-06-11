@@ -3,23 +3,21 @@ SELECT
   product_name,
   units_in_stock
 FROM products 
-WHERE units_in_stock < (
-    SELECT MIN(avg_quan)
-    FROM (
-        SELECT AVG(quantity) AS avg_quan
-        FROM order_details
-        GROUP BY product_id
-    )
+WHERE units_in_stock < ALL (
+    SELECT AVG(quantity)
+    FROM order_details
+    GROUP BY product_id
 );
 
 -- 2. Напишите запрос, который выводит общую сумму фрахтов заказов для компаний-заказчиков для заказов, стоимость фрахта которых больше или равна средней величине стоимости фрахта всех заказов, а также дата отгрузки заказа должна находится во второй половине июля 1996 года. Результирующая таблица должна иметь колонки customer_id и freight_sum, строки которой должны быть отсортированы по сумме фрахтов заказов.
 SELECT 
   customer_id,
   SUM(freight) AS freight_sum
-FROM orders
+FROM orders o
 WHERE freight >= (
-    SELECT AVG(freight)
-    FROM orders
+    SELECT AVG(sub_o.freight)
+    FROM orders sub_o
+    WHERE sub_o.customer_id = o.customer_id
 )
 AND shipped_date BETWEEN '1996-07-16' AND '1996-07-31'
 GROUP BY customer_id
@@ -33,7 +31,11 @@ SELECT
 FROM orders o
 JOIN order_details od USING(order_id)
 WHERE o.order_date >= '1997-09-01'
-AND ship_country IN ('Argentina', 'Brazil', 'Venezuela')
+AND o.ship_country IN (
+    'Argentina', 'Bolivia', 'Brazil', 'Chile', 'Colombia', 
+    'Ecuador', 'Guyana', 'Paraguay', 'Peru', 'Suriname', 
+    'Uruguay', 'Venezuela'
+)
 GROUP BY
   o.order_id,
   o.customer_id,

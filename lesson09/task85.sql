@@ -53,23 +53,27 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION adjust_salary(p_percent numeric DEFAULT 15.0, p_max_level numeric DEFAULT 70.0) 
 RETURNS SETOF employees AS $$
 BEGIN
+    RETURN QUERY 
     UPDATE employees
     SET salary = salary * (1 + p_percent / 100.0)
-    WHERE salary <= p_max_level;
+    WHERE salary <= p_max_level
+    RETURNING *;
 END;
 $$ LANGUAGE plpgsql;
 
 -- 7. Модифицировать предыдущую функцию так, чтобы она возвращала только колонки last_name, first_name, title, salary
 CREATE OR REPLACE FUNCTION adjust_salary(p_percent numeric DEFAULT 15.0, p_max_level numeric DEFAULT 70.0) 
-RETURNS RETURNS TABLE (
+RETURNS TABLE (
     last_name varchar,
     first_name varchar,
     title varchar,
     salary numeric) AS $$
 BEGIN
+	RETURN QUERY
     UPDATE employees
-    SET salary = salary * (1 + p_percent / 100.0)
-    WHERE salary <= p_max_level;
+    SET salary = employees.salary * (1 + p_percent / 100.0)
+    WHERE employees.salary <= p_max_level
+	RETURNING employees.last_name, employees.first_name, employees.title, employees.salary;
 END;
 $$ LANGUAGE plpgsql;
 

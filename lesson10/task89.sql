@@ -29,7 +29,7 @@ begin
 
     -- коэффициент повышения зарплаты не может быть ниже 5%
     if increase_rate < 0.05 then 
-        raise exception 'коэффициент повышения зарплаты не может быть ниже 5%';
+        raise exception 'коэффициент повышения зарплаты не может быть ниже 0.05';
     end if;
 
 	if cur_salary >= max_salary or cur_salary >= min_salary then 		
